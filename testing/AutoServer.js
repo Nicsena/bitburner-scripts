@@ -1,6 +1,6 @@
 /** @param {NS} ns */
 // Script made by Nicsena for the bitburner game.
-// This script auto hacks one server at a time in a repeat loop.
+// This script auto hacks one server that is scanned at a time in a repeat loop.
 // GitHub Repo: https://github.com/Nicsena/bitburner-scripts
 
 export async function main(ns) {
@@ -97,6 +97,11 @@ var List = ns.scan("home");
 while(true) {
 
 for (const host of List) {
+
+if(host === "home") {
+ns.print(`Server ${Name} - Cannot hack or nuke.`);
+	return await ns.sleep(1000);
+}
 
 if(!ServerHacking[host]) {
     ns.print(`Server ${Name} doesn't exist in the ServerHacking List.`);
