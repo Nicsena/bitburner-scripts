@@ -5,214 +5,110 @@
 
 export async function main(ns) {
 
-// Disable Logging
-ns.disableLog('ALL')
+  // Variables
+  var homeServer = "home"
+  var securityLevelTooHigh = false
 
-// Lists
-var ServerHacking = {
-	"home": "nope",
-	"n00dles": false,
-	"foodnstuff": false,
-	"joesguns": false,
-	"hong-fang-tea": false,
-	"harakiri-sushi": false,
-	"iron-gym": false,
-	"max-hardware": false,
-	"CSEC": false,
-	"zer0": false,
-	"nectar-net": false,
-	"harakiri-sushi": false,
-	"neo-net": false,
-	"omega-net": false,
-	"crush-fitness": false,
-	"rothman-uni": false,
-	"summit-uni": false,
-	"aevum-police": false,
-	"the-hub": false,
-	"netlink": false,
-	"I.I.I.I": false,
-	"millenium-fitness": false,
-	"aerocorp": false,
-	"deltaone": false,
-	"global-pharm": false
-}
+  // Disable Logging
+  ns.disableLog("ALL");
 
-var ServerMaxSecurity = {
-	"home": "100",
-	"n00dles": "10",
-	"foodnstuff": "11",
-	"joesguns": "17",
-	"hong-fang-tea": "35",
-	"harakiri-sushi": "20",
-	"iron-gym": "35",
-	"max-hardware": "20",
-	"CSEC": "10",
-	"zer0": "30",
-	"nectar-net": "25",
-	"harakiri-sushi": "20",
-	"neo-net": "30",
-	"omega-net": "30",
-	"crush-fitness": "48",
-	"rothman-uni": "55",
-	"summit-uni": "60",
-	"aevum-police": "82",
-	"the-hub": "41",
-	"netlink": "72",
-	"I.I.I.I": "10",
-	"millenium-fitness": "59",
-	"aerocorp": "89",
-	"deltaone": "84",
-	"global-pharm": "86"
-}
+  // Lists
+  var ServerMaxSecurity = {
+    "home": "100",
+    "n00dles": "10",
+    "foodnstuff": "11",
+    "joesguns": "17",
+    "hong-fang-tea": "35",
+    "harakiri-sushi": "20",
+    "iron-gym": "35",
+    "max-hardware": "20",
+    "CSEC": "10",
+    "zer0": "30",
+    "nectar-net": "25",
+    "harakiri-sushi": "20",
+    "neo-net": "30",
+    "omega-net": "30",
+    "crush-fitness": "48",
+    "rothman-uni": "55",
+    "summit-uni": "60",
+    "aevum-police": "82",
+    "the-hub": "41",
+    "netlink": "72",
+    "I.I.I.I": "10",
+    "millenium-fitness": "59",
+    "aerocorp": "89",
+    "deltaone": "84",
+    "global-pharm": "86"
+  };
 
-var ServerPorts = {
-	"home": "5",
-	"n00dles": "0",
-	"foodnstuff": "0",
-	"joesguns": "0",
-	"hong-fang-tea": "0",
-	"harakiri-sushi": "0",
-	"iron-gym": "1",
-	"max-hardware": "1",
-	"CSEC": "1",
-	"zer0": "1",
-	"nectar-net": "0",
-	"harakiri-sushi": "0",
-	"neo-net": "0",
-	"omega-net": "2",
-	"crush-fitness": "2",
-	"rothman-uni": "3",
-	"summit-uni": "3",
-	"aevum-police": "4",
-	"the-hub": "2",
-	"netlink": "3",
-	"I.I.I.I": "3",
-	"millenium-fitness": "3",
-	"aerocorp": "5",
-	"deltaone": "4",
-	"global-pharm": "4"
-}
+  // List of scanned servers
+  var list = ns.scan("home");
 
-// Hosts List
-// Replace "home" with ns.getHostname() if you want scan from the server itself, instead from home computer
-var List = ns.scan("home");
+  // Remove the home server from list
+  if(list.includes(homeServer)) var list = list.filter(server => server !== homeServer);
 
-while(true) {
+	while(true) {
 
-for (const host of List) {
+	for (const host of list) {
 
-if(host === "home") {
-ns.print(`Server ${host} - Cannot hack or nuke.`);
-	return await ns.sleep(1000);
-}
+    if(list.length === 0) return ns.print(`There are no servers in the list.`)
+		if (host === homeServer) return ns.print(`Home server - cannot do anything to it`);
 
-await ns.sleep(100);
+		await ns.sleep(100);
 
-// Player
-var currentHackingLevel = ns.getHackingLevel()
+		// Player
+    var playerCurrentHackingLevel = ns.getHackingLevel();
 
-// Server
-var Name = host;
-var Root = ns.hasRootAccess(Name);
-var SecurityLevel = ns.getServerSecurityLevel(Name)
-var SecurityWeakenTime = ns.getWeakenTime(Name)
-var RequiredHackingLevel = ns.getServerRequiredHackingLevel(Name);
-var RequiredPorts = ns.getServerNumPortsRequired(Name);
+    // Server
+    var serverName = host;
+    var serverRoot = ns.hasRootAccess(serverName);
+    var serverSecurityLevel = ns.getServerSecurityLevel(serverName);
+    var serverSecurityWeakenTime = ns.getWeakenTime(serverName);
+    var serverRequiredHackingLevel = ns.getServerRequiredHackingLevel(serverName);
+    var serverRequiredPorts = ns.getServerNumPortsRequired(serverName);
 
-// Check if server security level is above or below the specified security level in ServerMaxSecurity array.
-if(SecurityLevel > ServerMaxSecurity[Name]) {
+		// Check if server security level is above or equal to the specified security level in ServerMaxSecurity array.
+		if (serverSecurityLevel >= ServerMaxSecurity[serverName]) {
 
-    ns.print(`${Name} is above specified max security level. Current Security Level: ${SecurityLevel}.`)
-	
-	// Check for Root
-	if(Root === true) {
-		ns.print(`Weakening ${Name}'s Security. Weakening Time: ${SecurityWeakenTime}`)
-	    await ns.weaken(Name, { threads: 1})
-		var newSecurityLevel = ns.getServerSecurityLevel(Name)
+			var securityLevelTooHigh = true;
+			ns.print(`The security level for ${serverName} is above the specified security level that it can go over. The current security level is ${serverSecurityLevel}.`)
+		
+			// Check for root access on server
+			if(!serverRoot) ns.print(`${serverName} doesn't have root access. Unable to weaken server security.`);
+		
+			if(serverRoot) {
+				ns.print(`${serverName} has root access. Now weakening server security. Weaken Time: ${serverSecurityWeakenTime}`)
+				await ns.weaken(serverName);
+        var serverNewSecurityLevel = ns.getServerSecurityLevel(serverName);
+        var securityLevelTooHigh = false;
 
-		// newSecurityLevel is equal to SecurityLevel
-		if(newSecurityLevel === SecurityLevel) {
-			ns.print(`${server} Security Level didn't go down. Current Security Level: ${currentLevel}`);	
-		} 
+        // - Check the new security level of the server -
 
-		// newSecurityLevel is less than SecurityLevel
-		if(newSecurityLevel < SecurityLevel) {
-			ns.print(`Weakened ${Name}'s Security. New Security Level is ${newSecurityLevel}`)
-		}
+        // If the new security level is the same as the previous security level
+        if(serverNewSecurityLevel === serverSecurityLevel) ns.print(`The security level of ${serverName} didn't go down. The current security level is ${serverNewSecurityLevel}`);
+        
+        // If the new security level is less than the previous security level
+        if(serverNewSecurityLevel < serverSecurityLevel) ns.print(`The security of ${serverName} weakened. The new security level is ${serverNewSecurityLevel}`);
 
-	} else {
-		ns.print(`Unable to weaken ${Name}'s Security because of no root access.`)
-	};
-
-} else {
-
-	ns.print(`${Name} is below specified max security level. Current Security Level: ${SecurityLevel}`)
-
-	// Check if player's hacking level is above or equal to the server required hacking level
-	if(currentHackingLevel >= RequiredHackingLevel) {
-		ns.print(`Player Hacking Level is above the or equal to the Required Hacking Level for ${Name}.`)
-
-		// Check if server has root access or not
-		if(Root === true) {
-			ns.print(`${Name} has root access.`);
-			
-			ServerHacking[Name] = true
-			ns.print(`Hacking ${Name}`);
-			await ns.hack(Name, { threads: 1 });
-			var newSecurityLevel = ns.getServerSecurityLevel(Name)
-			ns.print(`Hacked ${Name}. New Security Level: ${newSecurityLevel}`);
-			ServerHacking[Name] = false
-			
-		} else {
-
-			ns.print(`${Name} doesn't have root access. Attempting to gain root access.`);
-
-			// Check if server has required ports.
-			if(RequiredPorts > 0) {
-			return ns.print(`${Name} has required ports to be able to nuke to gain root access. Aborting.`)
+        // If the new security level is more than the previous security level
+        if(serverNewSecurityLevel > serverSecurityLevel) ns.print(`The security of ${serverName} strengthened. The new security level is ${serverNewSecurityLevel}`);
+				
 			};
 
-			// Check if NUKE.exe is on the home computer
-			var NukeExists = ns.fileExists("NUKE.exe", "home")
-			
-			if(NukeExists === true) {
-				// Run the NUKE.exe program to gain root access on the server
-				ns.print(`Running NUKE.exe on ${Name}`);
-				ns.nuke(Name)
-				var NewRoot = ns.hasRootAccess(Name);
+		};
 
-				// Check if server now has root access or not.
-				if(NewRoot === true) {
-					ns.print(`${Name} now has root access.`)
-				} else {
-					ns.print(`Failed to gain root access on ${Name}.`)
-				}
+    // Check if server is below to the specified security level in ServerMaxSecurity array.
+    if (serverSecurityLevel < ServerMaxSecurity[serverName]) {
 
-		
-
-				
-			} else {
-				
-			return ns.print("home computer doesn't have the NUKE.exe program. Aborting.")
-				
-			}
-			
-
-		}
+      ns.print(`The security for ${serverName} is below the specified security level that it can go over. The current security level is ${serverSecurityLevel} `)
 
 
-	} else {
-
-	ns.print(`Player is below the required hacking level for ${Name}.`)
-	
-	}
-
-};
+    };
 
 
-};
+		};
 
+	};
 
-}
-
+ 
 };
