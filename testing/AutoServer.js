@@ -10,6 +10,7 @@ ns.disableLog('ALL')
 
 // Lists
 var ServerHacking = {
+	"home": "nope",
 	"n00dles": false,
 	"foodnstuff": false,
 	"joesguns": false,
@@ -37,6 +38,7 @@ var ServerHacking = {
 }
 
 var ServerMaxSecurity = {
+	"home": "100",
 	"n00dles": "10",
 	"foodnstuff": "11",
 	"joesguns": "17",
@@ -64,6 +66,7 @@ var ServerMaxSecurity = {
 }
 
 var ServerPorts = {
+	"home": "5",
 	"n00dles": "0",
 	"foodnstuff": "0",
 	"joesguns": "0",
@@ -99,26 +102,11 @@ while(true) {
 for (const host of List) {
 
 if(host === "home") {
-ns.print(`Server ${Name} - Cannot hack or nuke.`);
+ns.print(`Server ${host} - Cannot hack or nuke.`);
 	return await ns.sleep(1000);
 }
 
-if(!ServerHacking[host]) {
-    ns.print(`Server ${Name} doesn't exist in the ServerHacking List.`);
-	return await ns.sleep(1000);
-} 
-
-if(!ServerMaxSecurity[host]) {
-    ns.print(`Server ${Name} doesn't exist in the ServerMaxSecurity List.`);
-	return await ns.sleep(1000);
-}
-
-if(!ServerPorts[host]) {
-	ns.print(`Server ${Name} doesn't exist in the ServerPorts List.`)
-	return await ns.sleep(1000);
-}
-
-await ns.sleep(250);
+await ns.sleep(100);
 
 // Player
 var currentHackingLevel = ns.getHackingLevel()
@@ -139,7 +127,7 @@ if(SecurityLevel > ServerMaxSecurity[Name]) {
 	// Check for Root
 	if(Root === true) {
 		ns.print(`Weakening ${Name}'s Security. Weakening Time: ${SecurityWeakenTime}`)
-	    await ns.weaken(Name)
+	    await ns.weaken(Name, { threads: 1})
 		var newSecurityLevel = ns.getServerSecurityLevel(Name)
 
 		// newSecurityLevel is equal to SecurityLevel
