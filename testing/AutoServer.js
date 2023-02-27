@@ -91,7 +91,7 @@ var ServerPorts = {
 }
 
 // Hosts List
-// Replace "home" with ns.hostname() if you want scan from the server itself, instead from home computer
+// Replace "home" with ns.getHostname() if you want scan from the server itself, instead from home computer
 var List = ns.scan("home");
 
 while(true) {
